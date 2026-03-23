@@ -1,0 +1,39 @@
+name: Build NDS Launcher
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: devkitpro/devkitarm:latest # devkitARM 공식 이미지 사용
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install Dependencies
+        run: |
+          # 빌드에 필요한 추가 도구가 있다면 여기서 설치 (보통은 기본 포함)
+          apt-get update && apt-get install -y make
+
+      - name: Build Project
+        run: |
+          # 컴파일 수행
+          make
+
+      - name: Upload NDS Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: pico-launcher-nds
+          path: |
+            *.nds
+            *.arm9
+            *.arm7
